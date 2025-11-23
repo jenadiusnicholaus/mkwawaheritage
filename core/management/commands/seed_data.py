@@ -34,7 +34,7 @@ class Command(BaseCommand):
             TourismSite.objects.all().delete()
             HistoricalEvent.objects.all().delete()
             Chief.objects.all().delete()
-            self.stdout.write(self.style.SUCCESS('✓ Existing data cleared'))
+            self.stdout.write(self.style.SUCCESS('[OK] Existing data cleared'))
 
         self.stdout.write('Seeding database...\n')
 
@@ -97,7 +97,7 @@ class Command(BaseCommand):
         for chief_data in chiefs_data:
             chief = Chief.objects.create(**chief_data)
             chiefs.append(chief)
-            self.stdout.write(f'  ✓ Created {chief.name}')
+            self.stdout.write(f'  [+] Created {chief.name}')
 
         # Seed Historical Events
         self.stdout.write('\nCreating Historical Events...')
@@ -148,7 +148,7 @@ class Command(BaseCommand):
 
         for event_data in events_data:
             event = HistoricalEvent.objects.create(**event_data)
-            self.stdout.write(f'  ✓ Created event: {event.title}')
+            self.stdout.write(f'  [+] Created event: {event.title}')
 
         # Seed Tourism Sites
         self.stdout.write('\nCreating Tourism Sites...')
@@ -211,7 +211,7 @@ class Command(BaseCommand):
         for site_data in tourism_data:
             site = TourismSite.objects.create(**site_data)
             tourism_sites.append(site)
-            self.stdout.write(f'  ✓ Created site: {site.name}')
+            self.stdout.write(f'  [+] Created site: {site.name}')
 
         # Seed Bookings
         self.stdout.write('\nCreating Bookings...')
@@ -244,9 +244,9 @@ class Command(BaseCommand):
                 status=random.choice(['pending', 'confirmed', 'confirmed', 'confirmed']),
             )
             if i < 5:
-                self.stdout.write(f'  ✓ Created booking: {booking.booking_reference}')
+                self.stdout.write(f'  [+] Created booking: {booking.booking_reference}')
 
-        self.stdout.write(f'  ✓ Created 20 bookings total')
+        self.stdout.write(f'  [+] Created 20 bookings total')
 
         # Seed Product Categories
         self.stdout.write('\nCreating Product Categories...')
@@ -281,7 +281,7 @@ class Command(BaseCommand):
         for cat_data in categories_data:
             category = ProductCategory.objects.create(**cat_data)
             product_categories.append(category)
-            self.stdout.write(f'  ✓ Created category: {category.name}')
+            self.stdout.write(f'  [+] Created category: {category.name}')
 
         # Seed Products
         self.stdout.write('\nCreating Products...')
@@ -401,7 +401,7 @@ class Command(BaseCommand):
         for prod_data in products_data:
             product = Product.objects.create(**prod_data)
             products.append(product)
-            self.stdout.write(f'  ✓ Created product: {product.name}')
+            self.stdout.write(f'  [+] Created product: {product.name}')
 
         # Seed Bids
         self.stdout.write('\nCreating Bids...')
@@ -428,7 +428,7 @@ class Command(BaseCommand):
             product.current_bid = current_bid
             product.save()
 
-        self.stdout.write(f'  ✓ Created {bid_count} bids')
+        self.stdout.write(f'  [+] Created {bid_count} bids')
 
         # Seed Project Categories
         self.stdout.write('\nCreating Project Categories...')
@@ -455,7 +455,7 @@ class Command(BaseCommand):
         for cat_data in project_categories_data:
             category = ProjectCategory.objects.create(**cat_data)
             proj_categories.append(category)
-            self.stdout.write(f'  ✓ Created category: {category.name}')
+            self.stdout.write(f'  [+] Created category: {category.name}')
 
         # Seed Projects
         self.stdout.write('\nCreating Projects...')
@@ -549,7 +549,7 @@ class Command(BaseCommand):
 
         for proj_data in projects_data:
             project = Project.objects.create(**proj_data)
-            self.stdout.write(f'  ✓ Created project: {project.title}')
+            self.stdout.write(f'  [+] Created project: {project.title}')
 
         # Seed Newsletter Subscribers
         self.stdout.write('\nCreating Newsletter Subscribers...')
@@ -559,7 +559,7 @@ class Command(BaseCommand):
                 name=f'Subscriber {i}',
                 is_active=random.choice([True, True, True, False]),
             )
-        self.stdout.write('  ✓ Created 50 newsletter subscribers')
+        self.stdout.write('  [+] Created 50 newsletter subscribers')
 
         # Seed Contact Messages
         self.stdout.write('\nCreating Contact Messages...')
@@ -581,9 +581,9 @@ class Command(BaseCommand):
                 message=f'This is a test message {i} regarding various inquiries about the Mkwawa Heritage site and services.',
                 is_read=random.choice([True, False]),
             )
-        self.stdout.write('  ✓ Created 15 contact messages')
+        self.stdout.write('  [+] Created 15 contact messages')
 
-        self.stdout.write(self.style.SUCCESS('\n✓ Database seeding completed successfully!'))
+        self.stdout.write(self.style.SUCCESS('\n[+] Database seeding completed successfully!'))
         self.stdout.write(self.style.SUCCESS('\nSummary:'))
         self.stdout.write(f'  • Chiefs: {Chief.objects.count()}')
         self.stdout.write(f'  • Historical Events: {HistoricalEvent.objects.count()}')
