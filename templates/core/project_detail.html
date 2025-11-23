@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ project.title }} - MkwawaHeritage{% endblock %}
+
+{% block content %}
+<!-- Project Header -->
+<section class="project-detail-header" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)){% if project.image %}, url('{{ project.image.url }}'){% endif %};">
+    <div class="container">
+        <div class="project-header-content">
+            {% if project.category %}
+            <span class="project-category-badge">{{ project.category.name }}</span>
+            {% endif %}
+            <h1>{{ project.title }}</h1>
+            <p class="project-location"><i class="fas fa-map-marker-alt"></i> {{ project.location }}</p>
+            <span class="project-status-badge status-{{ project.status }}">{{ project.get_status_display }}</span>
+        </div>
+    </div>
+</section>
+
+<!-- Project Details -->
+<section class="section">
+    <div class="container">
+        <div class="project-detail-grid">
+            <div class="project-main-content">
+                <h2>Project Overview</h2>
+                {{ project.description|linebreaks }}
+                
+                <h3>Objectives</h3>
+                {{ project.objectives|linebreaks }}
+                
+                {% if project.impact_summary %}
+                <h3>Impact & Outcomes</h3>
+                {{ project.impact_summary|linebreaks }}
+                {% endif %}
+                
+                {% if project.partners %}
+                <h3>Partners & Collaborators</h3>
+                {{ project.partners|linebreaks }}
+                {% endif %}
+            </div>
+            
+            <div class="project-sidebar">
+                <div class="project-stats-card">
+                    <h3>Project Statistics</h3>
+                    
+                    <div class="stat-item-large">
+                        <i class="fas fa-calendar-alt"></i>
+                        <div class="stat-content">
+                            <strong>Start Date</strong>
+                            <p>{{ project.start_date|date:"F d, Y" }}</p>
+                        </div>
+                    </div>
+                    
+                    {% if project.end_date %}
+                    <div class="stat-item-large">
+                        <i class="fas fa-calendar-check"></i>
+                        <div class="stat-content">
+                            <strong>End Date</strong>
+                            <p>{{ project.end_date|date:"F d, Y" }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="stat-item-large">
+                        <i class="fas fa-users"></i>
+                        <div class="stat-content">
+                            <strong>Beneficiaries</strong>
+                            <p>{{ project.beneficiaries }} people</p>
+                        </div>
+                    </div>
+                    
+                    {% if project.budget %}
+                    <div class="stat-item-large">
+                        <i class="fas fa-dollar-sign"></i>
+                        <div class="stat-content">
+                            <strong>Budget</strong>
+                            <p>${{ project.budget|floatformat:0 }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="progress-section-detail">
+                        <h4>Project Progress</h4>
+                        <div class="progress-bar-large">
+                            <div class="progress-fill" style="width: {{ project.progress_percentage }}%"></div>
+                        </div>
+                        <p class="progress-percent-large">{{ project.progress_percentage }}% Complete</p>
+                    </div>
+                </div>
+                
+                <div class="support-card">
+                    <h3>Support This Project</h3>
+                    <p>Your contribution helps sustain and expand our community development initiatives.</p>
+                    <a href="{% url 'contact' %}" class="btn btn-primary btn-block">Get Involved</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

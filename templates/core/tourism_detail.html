@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ site.name }} - MkwawaHeritage{% endblock %}
+
+{% block content %}
+<!-- Site Header -->
+<section class="site-detail-header" style="background-image: url('{% if site.image %}{{ site.image.url }}{% endif %}');">
+    <div class="site-header-overlay"></div>
+    <div class="container">
+        <div class="site-header-content">
+            <span class="site-type-badge">{{ site.get_site_type_display }}</span>
+            <h1>{{ site.name }}</h1>
+            <p class="location"><i class="fas fa-map-marker-alt"></i> {{ site.location }}, {{ site.region }}</p>
+        </div>
+    </div>
+</section>
+
+<!-- Site Details & Booking -->
+<section class="section">
+    <div class="container">
+        <div class="site-detail-grid">
+            <div class="site-main-content">
+                <h2>About This Site</h2>
+                {{ site.description|linebreaks }}
+                
+                <h3>Amenities & Facilities</h3>
+                {{ site.amenities|linebreaks }}
+                
+                <div class="site-info-grid">
+                    <div class="info-box">
+                        <i class="fas fa-clock"></i>
+                        <h4>Opening Hours</h4>
+                        <p>{{ site.opening_hours }}</p>
+                    </div>
+                    <div class="info-box">
+                        <i class="fas fa-users"></i>
+                        <h4>Daily Capacity</h4>
+                        <p>{{ site.capacity }} visitors</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="booking-sidebar">
+                <div class="booking-card">
+                    <h3>Book Your Visit</h3>
+                    
+                    <div class="pricing-info">
+                        <div class="price-row">
+                            <span>Local Visitors</span>
+                            <span class="price">TZS {{ site.entry_fee_local|floatformat:0 }}</span>
+                        </div>
+                        <div class="price-row">
+                            <span>Foreign Visitors</span>
+                            <span class="price">TZS {{ site.entry_fee_foreign|floatformat:0 }}</span>
+                        </div>
+                    </div>
+                    
+                    <form method="post" class="booking-form">
+                        {% csrf_token %}
+                        
+                        <div class="form-group">
+                            <label>Full Name *</label>
+                            <input type="text" name="visitor_name" required class="form-control">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Email *</label>
+                            <input type="email" name="visitor_email" required class="form-control">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Phone Number *</label>
+                            <input type="tel" name="visitor_phone" required class="form-control">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Visitor Type *</label>
+                            <select name="visitor_type" required class="form-control" id="visitorType">
+                                <option value="local">Local</option>
+                                <option value="foreign">Foreign</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Number of Visitors *</label>
+                            <input type="number" name="number_of_visitors" min="1" value="1" required class="form-control" id="numVisitors">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Visit Date *</label>
+                            <input type="date" name="visit_date" required class="form-control" min="{{ today|date:'Y-m-d' }}">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Preferred Time *</label>
+                            <input type="time" name="visit_time" required class="form-control">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Special Requirements</label>
+                            <textarea name="special_requirements" rows="3" class="form-control" placeholder="Any special needs or requests..."></textarea>
+                        </div>
+                        
+                        <div class="total-amount">
+                            <span>Total Amount:</span>
+                            <span class="amount" id="totalAmount">TZS 0</span>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-block">Confirm Booking</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const visitorType = document.getElementById('visitorType');
+    const numVisitors = document.getElementById('numVisitors');
+    const totalAmount = document.getElementById('totalAmount');
+    const localFee = {{ site.entry_fee_local }};
+    const foreignFee = {{ site.entry_fee_foreign }};
+    
+    function updateTotal() {
+        const type = visitorType.value;
+        const num = parseInt(numVisitors.value) || 1;
+        const fee = type === 'local' ? localFee : foreignFee;
+        const total = fee * num;
+        totalAmount.textContent = 'TZS ' + total.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+    
+    visitorType.addEventListener('change', updateTotal);
+    numVisitors.addEventListener('input', updateTotal);
+    updateTotal();
+});
+</script>
+{% endblock %}

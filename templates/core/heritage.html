@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Our Heritage - MkwawaHeritage{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container">
+        <h1>Our Heritage</h1>
+        <p>The Legacy of Chief Mkwawa - From the 1st to the 5th</p>
+    </div>
+</section>
+
+<!-- Chiefs Timeline -->
+<section class="section">
+    <div class="container">
+        <div class="chiefs-timeline">
+            {% for chief in chiefs %}
+            <div class="chief-timeline-item">
+                <div class="chief-timeline-content">
+                    <div class="chief-timeline-image">
+                        {% if chief.image %}
+                        <img src="{{ chief.image.url }}" alt="{{ chief.name }}">
+                        {% else %}
+                        <div class="chief-placeholder">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="chief-timeline-info">
+                        <h2>{{ chief.name }}</h2>
+                        <h3>{{ chief.get_position_display }}</h3>
+                        <p class="reign-period">
+                            <i class="fas fa-calendar"></i>
+                            {{ chief.reign_start }} - {% if chief.reign_end %}{{ chief.reign_end }}{% else %}Present{% endif %}
+                        </p>
+                        {% if chief.birth_year %}
+                        <p class="lifespan">
+                            <i class="fas fa-hourglass-start"></i>
+                            {{ chief.birth_year }} - {% if chief.death_year %}{{ chief.death_year }}{% else %}Present{% endif %}
+                        </p>
+                        {% endif %}
+                        
+                        <div class="chief-biography">
+                            <h4>Biography</h4>
+                            {{ chief.biography|linebreaks }}
+                        </div>
+                        
+                        <div class="chief-achievements">
+                            <h4>Achievements</h4>
+                            {{ chief.achievements|linebreaks }}
+                        </div>
+                        
+                        <a href="{% url 'chief_detail' chief.slug %}" class="btn btn-primary">Learn More</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Historical Events -->
+<section class="section bg-light">
+    <div class="container">
+        <div class="section-header">
+            <h2>Historical Events</h2>
+            <div class="filter-buttons">
+                <a href="{% url 'heritage' %}" class="btn btn-sm {% if not request.GET.chief %}active{% endif %}">All Events</a>
+                {% for chief in chiefs %}
+                <a href="?chief={{ chief.slug }}" class="btn btn-sm {% if request.GET.chief == chief.slug %}active{% endif %}">{{ chief.name }}</a>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="events-list">
+            {% for event in events %}
+            <div class="event-card">
+                <div class="event-date">
+                    <div class="day">{{ event.date|date:"d" }}</div>
+                    <div class="month">{{ event.date|date:"M" }}</div>
+                    <div class="year">{{ event.date|date:"Y" }}</div>
+                </div>
+                <div class="event-content">
+                    {% if event.image %}
+                    <img src="{{ event.image.url }}" alt="{{ event.title }}">
+                    {% endif %}
+                    <h3>{{ event.title }}</h3>
+                    {% if event.chief %}
+                    <p class="event-chief"><i class="fas fa-crown"></i> During the reign of {{ event.chief.name }}</p>
+                    {% endif %}
+                    <p>{{ event.description }}</p>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-center">No historical events found.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

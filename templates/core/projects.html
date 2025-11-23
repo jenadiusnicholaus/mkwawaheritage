@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Community Projects - MkwawaHeritage{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container">
+        <h1>Community Projects</h1>
+        <p>Supporting Sustainable Development: Aquaculture, Horticulture & Irrigation</p>
+    </div>
+</section>
+
+<!-- Filter Section -->
+<section class="filter-section">
+    <div class="container">
+        <div class="filter-bar">
+            <a href="{% url 'projects' %}" class="filter-btn {% if not request.GET.category and not request.GET.status %}active{% endif %}">All Projects</a>
+            {% for category in categories %}
+            <a href="?category={{ category.slug }}" class="filter-btn {% if request.GET.category == category.slug %}active{% endif %}">{{ category.name }}</a>
+            {% endfor %}
+        </div>
+        
+        <div class="status-filter">
+            <label>Status:</label>
+            {% for status_code, status_name in status_choices %}
+            <a href="?status={{ status_code }}" class="status-btn {% if request.GET.status == status_code %}active{% endif %}">{{ status_name }}</a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Projects Grid -->
+<section class="section">
+    <div class="container">
+        <div class="projects-grid-full">
+            {% for project in projects %}
+            <div class="project-card-full">
+                <div class="project-image-wrapper">
+                    {% if project.image %}
+                    <img src="{{ project.image.url }}" alt="{{ project.title }}">
+                    {% else %}
+                    <img src="{% static 'projects/project_beans.jpeg' %}" alt="{{ project.title }}">
+                    {% endif %}
+                    <span class="project-status-badge status-{{ project.status }}">{{ project.get_status_display }}</span>
+                </div>
+                <div class="project-content-full">
+                    <div class="project-meta">
+                        {% if project.category %}
+                        <span class="project-category">
+                            <i class="fas fa-tag"></i> {{ project.category.name }}
+                        </span>
+                        {% endif %}
+                        <span class="project-location">
+                            <i class="fas fa-map-marker-alt"></i> {{ project.location }}
+                        </span>
+                    </div>
+                    
+                    <h3><a href="{% url 'project_detail' project.slug %}">{{ project.title }}</a></h3>
+                    <p class="project-description">{{ project.description|truncatewords:30 }}</p>
+                    
+                    <div class="project-stats-grid">
+                        <div class="stat-item">
+                            <i class="fas fa-users"></i>
+                            <div class="stat-info">
+                                <span class="stat-value">{{ project.beneficiaries }}</span>
+                                <span class="stat-label">Beneficiaries</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-calendar"></i>
+                            <div class="stat-info">
+                                <span class="stat-value">{{ project.start_date|date:"M Y" }}</span>
+                                <span class="stat-label">Started</span>
+                            </div>
+                        </div>
+                        {% if project.budget %}
+                        <div class="stat-item">
+                            <i class="fas fa-dollar-sign"></i>
+                            <div class="stat-info">
+                                <span class="stat-value">${{ project.budget|floatformat:0 }}</span>
+                                <span class="stat-label">Budget</span>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="progress-section">
+                        <div class="progress-header">
+                            <span>Progress</span>
+                            <span class="progress-percent">{{ project.progress_percentage }}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ project.progress_percentage }}%"></div>
+                        </div>
+                    </div>
+                    
+                    <a href="{% url 'project_detail' project.slug %}" class="btn btn-primary">Learn More</a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="no-results">
+                <i class="fas fa-project-diagram"></i>
+                <h3>No projects found</h3>
+                <p>Check back soon for new community initiatives</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Project Impact -->
+<section class="section bg-light">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2>Our Impact</h2>
+            <p>Making a difference in the Southern Highlands community</p>
+        </div>
+        
+        <div class="impact-stats">
+            <div class="impact-stat">
+                <div class="impact-number">{{ projects|length }}</div>
+                <div class="impact-label">Active Projects</div>
+            </div>
+            <div class="impact-stat">
+                <div class="impact-number">
+                    {% widthratio projects|length 1 1000 %}+
+                </div>
+                <div class="impact-label">People Impacted</div>
+            </div>
+            <div class="impact-stat">
+                <div class="impact-number">3</div>
+                <div class="impact-label">Focus Areas</div>
+            </div>
+            <div class="impact-stat">
+                <div class="impact-number">100%</div>
+                <div class="impact-label">Community Driven</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content">
+            <h2>Support Our Projects</h2>
+            <p>Your contribution helps sustain and expand our community development initiatives</p>
+            <a href="{% url 'contact' %}" class="btn btn-light">Get Involved</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

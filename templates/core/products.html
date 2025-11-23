@@ -1,0 +1,1033 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Arts & Crafts - MkwawaHeritage{% endblock %}
+
+{% block content %}
+<!-- Page Header with Background -->
+<section class="products-hero">
+    <div class="products-hero-bg" style="background-image: linear-gradient(rgba(139, 69, 19, 0.85), rgba(44, 24, 16, 0.85)), url('{% static 'products/product_cabbage.jpeg' %}');"></div>
+    <div class="container">
+        <div class="products-hero-content">
+            <span class="hero-badge"><i class="fas fa-palette"></i> Authentic Heritage</span>
+            <h1>Arts & Crafts Collection</h1>
+            <p class="hero-description">Discover authentic handcrafted items from our community<br>Available as NFTs and Physical Products</p>
+            <div class="hero-stats">
+                <div class="stat-box">
+                    <i class="fas fa-box"></i>
+                    <span>{{ page_obj.paginator.count }}+ Items</span>
+                </div>
+                <div class="stat-box">
+                    <i class="fab fa-ethereum"></i>
+                    <span>NFT Enabled</span>
+                </div>
+                <div class="stat-box">
+                    <i class="fas fa-shipping-fast"></i>
+                    <span>Worldwide Shipping</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Filter Section -->
+<section class="products-filter-section">
+    <div class="container">
+        <div class="filter-header">
+            <h3><i class="fas fa-filter"></i> Filter Products</h3>
+            <button class="filter-toggle" id="filterToggle">
+                <span>Show Filters</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+        </div>
+        
+        <div class="filter-controls-modern" id="filterControls">
+            <div class="filter-row">
+                <div class="filter-group-modern">
+                    <label><i class="fas fa-tag"></i> Category</label>
+                    <select id="categoryFilter" class="filter-select-modern">
+                        <option value="">All Categories</option>
+                        {% for category in categories %}
+                        <option value="{{ category.slug }}" {% if request.GET.category == category.slug %}selected{% endif %}>{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="filter-group-modern">
+                    <label><i class="fas fa-cube"></i> Product Type</label>
+                    <select id="typeFilter" class="filter-select-modern">
+                        <option value="">All Types</option>
+                        {% for type_code, type_name in product_types %}
+                        <option value="{{ type_code }}" {% if request.GET.type == type_code %}selected{% endif %}>{{ type_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="filter-group-modern">
+                    <label><i class="fas fa-check-circle"></i> Availability</label>
+                    <select id="statusFilter" class="filter-select-modern">
+                        <option value="">All Available</option>
+                        <option value="available">For Sale</option>
+                        <option value="bidding">Open for Bidding</option>
+                    </select>
+                </div>
+                
+                <div class="search-group-modern">
+                    <label><i class="fas fa-search"></i> Search</label>
+                    <div class="search-input-wrapper">
+                        <input type="text" id="searchInput" placeholder="Search by name, artist..." class="search-input-modern" value="{{ request.GET.search }}">
+                        <button class="btn-search-modern"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Products Grid -->
+<section class="section products-main-section">
+    <div class="container">
+        <div class="products-header-info">
+            <h2>Browse Our Collection</h2>
+            <p class="results-count">Showing <strong>{{ page_obj|length }}</strong> of <strong>{{ page_obj.paginator.count }}</strong> products</p>
+        </div>
+        
+        <div class="products-grid-luxury">
+            {% for product in page_obj %}
+            <div class="product-card-luxury">
+                <div class="product-image-luxury">
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                    {% else %}
+                    <img src="{% static 'products/product_cabbage.jpeg' %}" alt="{{ product.name }}">
+                    {% endif %}
+                    <div class="product-quick-view">
+                        <a href="{% url 'product_detail' product.slug %}" class="quick-view-btn">
+                            <i class="fas fa-eye"></i>
+                            <span>Quick View</span>
+                        </a>
+                    </div>
+                    <div class="product-badges-luxury">
+                        {% if product.product_type == 'nft' %}
+                        <span class="badge-luxury nft-badge">
+                            <i class="fab fa-ethereum"></i> NFT
+                        </span>
+                        {% elif product.product_type == 'both' %}
+                        <span class="badge-luxury hybrid-badge">
+                            <i class="fas fa-box"></i> NFT + Physical
+                        </span>
+                        {% else %}
+                        <span class="badge-luxury physical-badge">
+                            <i class="fas fa-box-open"></i> Physical
+                        </span>
+                        {% endif %}
+                        
+                        {% if product.status == 'bidding' %}
+                        <span class="badge-luxury bidding-badge">
+                            <i class="fas fa-gavel"></i> Live Bidding
+                        </span>
+                        {% endif %}
+                    </div>
+                    {% if product.featured %}
+                    <div class="featured-ribbon">
+                        <i class="fas fa-star"></i> Featured
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="product-content-luxury">
+                    <div class="product-meta">
+                        <span class="product-category-tag">{{ product.category.name }}</span>
+                        {% if product.year_created %}
+                        <span class="product-year">{{ product.year_created }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <h3 class="product-title-luxury">
+                        <a href="{% url 'product_detail' product.slug %}">{{ product.name }}</a>
+                    </h3>
+                    
+                    <div class="product-artist">
+                        <i class="fas fa-user-circle"></i>
+                        <span>by <strong>{{ product.artist_name }}</strong></span>
+                    </div>
+                    
+                    {% if product.description %}
+                    <p class="product-desc">{{ product.description|truncatewords:15 }}</p>
+                    {% endif %}
+                    
+                    <div class="product-footer-luxury">
+                        <div class="product-pricing">
+                            {% if product.status == 'bidding' %}
+                            <div class="bidding-price">
+                                <span class="price-label">Current Bid</span>
+                                <span class="price-value">${{ product.current_bid|floatformat:2 }}</span>
+                                <span class="bid-info">{{ product.bids.count }} bid(s)</span>
+                            </div>
+                            {% else %}
+                            <div class="regular-price">
+                                <span class="price-value">${{ product.price|floatformat:2 }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <a href="{% url 'product_detail' product.slug %}" class="btn-product-action">
+                            {% if product.status == 'bidding' %}
+                            <i class="fas fa-gavel"></i> Place Bid
+                            {% else %}
+                            <i class="fas fa-shopping-cart"></i> View Details
+                            {% endif %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="no-results-modern">
+                <div class="no-results-icon">
+                    <i class="fas fa-box-open"></i>
+                </div>
+                <h3>No Products Found</h3>
+                <p>We couldn't find any products matching your criteria</p>
+                <a href="{% url 'products' %}" class="btn btn-primary">Clear Filters</a>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}" class="page-link">&laquo; Previous</a>
+            {% endif %}
+            
+            <span class="page-info">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}" class="page-link">Next &raquo;</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- NFT & Heritage Info Section -->
+<section class="nft-heritage-section">
+    <div class="container">
+        <div class="nft-heritage-grid">
+            <div class="nft-info-card">
+                <div class="nft-icon">
+                    <i class="fab fa-ethereum"></i>
+                </div>
+                <h2>NFT Marketplace</h2>
+                <p class="nft-subtitle">Digital ownership of cultural heritage</p>
+                <p class="nft-description">Non-Fungible Tokens (NFTs) are unique digital assets that represent ownership of specific items. When you purchase an NFT from MkwawaHeritage, you own a piece of our cultural heritage in digital form, authenticated on the blockchain.</p>
+                
+                <div class="nft-features-grid">
+                    <div class="feature-item-nft">
+                        <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+                        <h4>Verified Authenticity</h4>
+                        <p>Blockchain-verified ownership</p>
+                    </div>
+                    <div class="feature-item-nft">
+                        <div class="feature-icon"><i class="fas fa-hands-helping"></i></div>
+                        <h4>Support Artisans</h4>
+                        <p>Direct support to creators</p>
+                    </div>
+                    <div class="feature-item-nft">
+                        <div class="feature-icon"><i class="fas fa-exchange-alt"></i></div>
+                        <h4>Tradeable Assets</h4>
+                        <p>Buy, sell, and collect</p>
+                    </div>
+                    <div class="feature-item-nft">
+                        <div class="feature-icon"><i class="fas fa-archive"></i></div>
+                        <h4>Heritage Preservation</h4>
+                        <p>Digital cultural legacy</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="heritage-showcase">
+                <img src="{% static 'products/product_french_beans.jpeg' %}" alt="Fresh Produce">
+                <div class="showcase-overlay">
+                    <h3>From Our Farms to Your Table</h3>
+                    <p>Supporting local farmers and sustainable agriculture</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Community Impact -->
+<section class="community-impact">
+    <div class="container">
+        <div class="impact-header">
+            <h2>Your Purchase Makes a Difference</h2>
+            <p>Every purchase supports our community and preserves our heritage</p>
+        </div>
+        
+        <div class="impact-grid">
+            <div class="impact-card">
+                <i class="fas fa-users"></i>
+                <h3>100+</h3>
+                <p>Artisans Supported</p>
+            </div>
+            <div class="impact-card">
+                <i class="fas fa-tree"></i>
+                <h3>Sustainable</h3>
+                <p>Eco-Friendly Practices</p>
+            </div>
+            <div class="impact-card">
+                <i class="fas fa-heart"></i>
+                <h3>Fair Trade</h3>
+                <p>Ethical Sourcing</p>
+            </div>
+            <div class="impact-card">
+                <i class="fas fa-globe-africa"></i>
+                <h3>Global</h3>
+                <p>Worldwide Delivery</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Products Hero Section */
+.products-hero {
+    position: relative;
+    padding: 120px 0 80px;
+    overflow: hidden;
+}
+
+.products-hero-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+}
+
+.products-hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: var(--white);
+}
+
+.hero-badge {
+    display: inline-block;
+    padding: 10px 25px;
+    background: rgba(255,215,0,0.2);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255,215,0,0.5);
+    border-radius: 30px;
+    color: var(--accent-color);
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+}
+
+.products-hero h1 {
+    color: var(--white);
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+}
+
+.hero-description {
+    font-size: 1.3rem;
+    margin-bottom: 3rem;
+    opacity: 0.95;
+    line-height: 1.8;
+}
+
+.hero-stats {
+    display: flex;
+    gap: 3rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.stat-box {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 15px 30px;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 50px;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.stat-box i {
+    font-size: 1.5rem;
+    color: var(--accent-color);
+}
+
+.stat-box span {
+    font-weight: 600;
+    font-size: 1.05rem;
+}
+
+/* Filter Section */
+.products-filter-section {
+    background: var(--white);
+    padding: 2rem 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 70px;
+    z-index: 100;
+}
+
+.filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.filter-header h3 {
+    color: var(--primary-color);
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter-toggle {
+    display: none;
+    padding: 10px 20px;
+    background: var(--light-color);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.filter-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+}
+
+.filter-group-modern label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.8rem;
+    font-weight: 600;
+    color: var(--dark-color);
+    font-size: 0.95rem;
+}
+
+.filter-select-modern {
+    width: 100%;
+    padding: 12px 18px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 1rem;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.filter-select-modern:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background: var(--white);
+}
+
+.search-input-wrapper {
+    display: flex;
+    gap: 0;
+}
+
+.search-input-modern {
+    flex: 1;
+    padding: 12px 18px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px 0 0 10px;
+    font-size: 1rem;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.search-input-modern:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background: var(--white);
+}
+
+.btn-search-modern {
+    padding: 12px 25px;
+    background: var(--primary-color);
+    color: var(--white);
+    border: none;
+    border-radius: 0 10px 10px 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-search-modern:hover {
+    background: var(--dark-color);
+}
+
+/* Products Main Section */
+.products-main-section {
+    background: linear-gradient(to bottom, #f8f9fa, #ffffff);
+    padding: 60px 0;
+}
+
+.products-header-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
+}
+
+.products-header-info h2 {
+    color: var(--primary-color);
+    font-size: 2rem;
+}
+
+.results-count {
+    color: var(--gray-color);
+    font-size: 1.05rem;
+}
+
+/* Products Grid Luxury */
+.products-grid-luxury {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2.5rem;
+}
+
+.product-card-luxury {
+    background: var(--white);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+    transition: all 0.4s ease;
+    position: relative;
+}
+
+.product-card-luxury:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+}
+
+.product-image-luxury {
+    position: relative;
+    height: 350px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
+}
+
+.product-image-luxury img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.product-card-luxury:hover .product-image-luxury img {
+    transform: scale(1.1);
+}
+
+.product-quick-view {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.product-card-luxury:hover .product-quick-view {
+    opacity: 1;
+}
+
+.quick-view-btn {
+    padding: 15px 35px;
+    background: var(--white);
+    color: var(--primary-color);
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.quick-view-btn:hover {
+    background: var(--accent-color);
+    color: var(--dark-color);
+    transform: scale(1.05);
+}
+
+.product-badges-luxury {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    z-index: 5;
+}
+
+.badge-luxury {
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    backdrop-filter: blur(10px);
+}
+
+.nft-badge {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: var(--white);
+}
+
+.hybrid-badge {
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+    color: var(--white);
+}
+
+.physical-badge {
+    background: rgba(255,255,255,0.95);
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+}
+
+.bidding-badge {
+    background: var(--danger);
+    color: var(--white);
+    animation: pulse 2s infinite;
+}
+
+.featured-ribbon {
+    position: absolute;
+    top: 15px;
+    right: -35px;
+    background: var(--accent-color);
+    color: var(--dark-color);
+    padding: 8px 40px;
+    transform: rotate(45deg);
+    font-weight: 700;
+    font-size: 0.85rem;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+}
+
+/* Product Content */
+.product-content-luxury {
+    padding: 2rem;
+}
+
+.product-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.product-category-tag {
+    padding: 5px 15px;
+    background: var(--light-color);
+    color: var(--primary-color);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.product-year {
+    color: var(--gray-color);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.product-title-luxury {
+    font-size: 1.4rem;
+    margin-bottom: 0.8rem;
+}
+
+.product-title-luxury a {
+    color: var(--dark-color);
+    transition: color 0.3s ease;
+}
+
+.product-title-luxury a:hover {
+    color: var(--primary-color);
+}
+
+.product-artist {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--gray-color);
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+}
+
+.product-artist i {
+    color: var(--secondary-color);
+}
+
+.product-desc {
+    color: var(--gray-color);
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+}
+
+.product-footer-luxury {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1.5rem;
+    border-top: 2px solid #f0f0f0;
+}
+
+.product-pricing {
+    flex: 1;
+}
+
+.bidding-price .price-label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--gray-color);
+    margin-bottom: 0.3rem;
+}
+
+.price-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    display: block;
+}
+
+.bid-info {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--success);
+    margin-top: 0.3rem;
+}
+
+.btn-product-action {
+    padding: 12px 25px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: var(--white);
+    border-radius: 50px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-product-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(139,69,19,0.3);
+}
+
+/* No Results */
+.no-results-modern {
+    text-align: center;
+    padding: 5rem 2rem;
+    grid-column: 1 / -1;
+}
+
+.no-results-icon {
+    font-size: 5rem;
+    color: var(--light-color);
+    margin-bottom: 1.5rem;
+}
+
+/* NFT Heritage Section */
+.nft-heritage-section {
+    padding: 80px 0;
+    background: linear-gradient(135deg, var(--light-color), var(--white));
+}
+
+.nft-heritage-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+.nft-info-card {
+    padding: 3rem;
+    background: var(--white);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+}
+
+.nft-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    color: var(--white);
+    margin-bottom: 2rem;
+}
+
+.nft-subtitle {
+    color: var(--secondary-color);
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.nft-description {
+    color: var(--gray-color);
+    line-height: 1.8;
+    margin-bottom: 2rem;
+}
+
+.nft-features-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.feature-item-nft {
+    text-align: center;
+    padding: 1.5rem;
+    background: var(--light-color);
+    border-radius: 15px;
+}
+
+.feature-icon {
+    width: 50px;
+    height: 50px;
+    margin: 0 auto 1rem;
+    background: var(--primary-color);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-size: 1.3rem;
+}
+
+.feature-item-nft h4 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.feature-item-nft p {
+    color: var(--gray-color);
+    font-size: 0.9rem;
+}
+
+.heritage-showcase {
+    position: relative;
+    height: 500px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+}
+
+.heritage-showcase img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.showcase-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 2.5rem;
+    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+    color: var(--white);
+}
+
+.showcase-overlay h3 {
+    color: var(--white);
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Community Impact */
+.community-impact {
+    padding: 80px 0;
+    background: var(--white);
+}
+
+.impact-header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.impact-header h2 {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.impact-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+}
+
+.impact-card {
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    background: linear-gradient(135deg, var(--light-color), var(--white));
+    border-radius: 15px;
+    transition: all 0.3s ease;
+}
+
+.impact-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.impact-card i {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.impact-card h3 {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.impact-card p {
+    color: var(--gray-color);
+    font-size: 1.05rem;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .filter-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .nft-heritage-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .impact-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .products-hero h1 {
+        font-size: 2.5rem;
+    }
+    
+    .hero-stats {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .filter-toggle {
+        display: block;
+    }
+    
+    .filter-controls-modern {
+        display: none;
+        margin-top: 1rem;
+    }
+    
+    .filter-controls-modern.active {
+        display: block;
+    }
+    
+    .filter-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .products-header-info {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .products-grid-luxury {
+        grid-template-columns: 1fr;
+    }
+    
+    .nft-features-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .impact-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const categoryFilter = document.getElementById('categoryFilter');
+    const typeFilter = document.getElementById('typeFilter');
+    const statusFilter = document.getElementById('statusFilter');
+    const searchInput = document.getElementById('searchInput');
+    const filterToggle = document.getElementById('filterToggle');
+    const filterControls = document.getElementById('filterControls');
+    
+    // Toggle filters on mobile
+    if (filterToggle) {
+        filterToggle.addEventListener('click', function() {
+            filterControls.classList.toggle('active');
+            const icon = this.querySelector('i');
+            icon.classList.toggle('fa-chevron-down');
+            icon.classList.toggle('fa-chevron-up');
+        });
+    }
+    
+    function updateFilters() {
+        const params = new URLSearchParams(window.location.search);
+        
+        if (categoryFilter.value) params.set('category', categoryFilter.value);
+        else params.delete('category');
+        
+        if (typeFilter.value) params.set('type', typeFilter.value);
+        else params.delete('type');
+        
+        if (statusFilter.value) params.set('status', statusFilter.value);
+        else params.delete('status');
+        
+        if (searchInput.value) params.set('search', searchInput.value);
+        else params.delete('search');
+        
+        window.location.search = params.toString();
+    }
+    
+    categoryFilter.addEventListener('change', updateFilters);
+    typeFilter.addEventListener('change', updateFilters);
+    statusFilter.addEventListener('change', updateFilters);
+    
+    document.querySelector('.btn-search-modern').addEventListener('click', updateFilters);
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') updateFilters();
+    });
+});
+</script>
+{% endblock %}

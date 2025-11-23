@@ -1,0 +1,584 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}MkwawaHeritage - Home{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero" id="heroSection">
+    <div class="hero-slider">
+        <div class="hero-slide active" style="background-image: url('{% static 'historical/chief_mkwawa_mtwavinyinyka.jpeg' %}');">
+            <div class="hero-overlay"></div>
+        </div>
+        <div class="hero-slide" style="background-image: url('{% static 'historical/mkwawa_makumbusho_historical_site.jpeg' %}');">
+            <div class="hero-overlay"></div>
+        </div>
+        <div class="hero-slide" style="background-image: url('{% static 'historical/tour_valley_site.jpeg' %}');">
+            <div class="hero-overlay"></div>
+        </div>
+    </div>
+    <div class="hero-content">
+        <div class="container">
+            <h1 class="hero-title animate-fade-in">Welcome to MkwawaHeritage</h1>
+            <p class="hero-subtitle animate-fade-in-delay-1">Discover the Legacy of Chief Mkwawa and the Southern Highlands</p>
+            <div class="hero-buttons animate-fade-in-delay-2">
+                <a href="{% url 'heritage' %}" class="btn btn-primary">Explore Our Heritage</a>
+                <a href="{% url 'tourism' %}" class="btn btn-secondary">Book A Visit</a>
+            </div>
+        </div>
+    </div>
+    <div class="hero-scroll">
+        <i class="fas fa-chevron-down"></i>
+    </div>
+    <div class="slider-controls">
+        <button class="slider-btn prev"><i class="fas fa-chevron-left"></i></button>
+        <div class="slider-dots">
+            <span class="dot active" data-slide="0"></span>
+            <span class="dot" data-slide="1"></span>
+            <span class="dot" data-slide="2"></span>
+        </div>
+        <button class="slider-btn next"><i class="fas fa-chevron-right"></i></button>
+    </div>
+</section>
+
+<!-- Chiefs Introduction -->
+<section class="chiefs-intro section">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2>The Lineage of Chief Mkwawa</h2>
+            <p>From the 1st Chief to the 5th, our heritage spans generations</p>
+        </div>
+        
+        <div class="chiefs-grid">
+            {% for chief in chiefs %}
+            <div class="chief-card">
+                <div class="chief-image">
+                    {% if chief.image %}
+                    <img src="{{ chief.image.url }}" alt="{{ chief.name }}">
+                    {% else %}
+                    <div class="chief-placeholder">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="chief-info">
+                    <h3>{{ chief.name }}</h3>
+                    <p class="chief-position">{{ chief.get_position_display }}</p>
+                    <p class="chief-reign">{{ chief.reign_start }} - {% if chief.reign_end %}{{ chief.reign_end }}{% else %}Present{% endif %}</p>
+                    <p class="chief-bio">{{ chief.biography|truncatewords:30 }}</p>
+                    <a href="{% url 'chief_detail' chief.slug %}" class="btn btn-outline">Read More</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center" style="margin-top: 3rem;">
+            <a href="{% url 'heritage' %}" class="btn btn-primary">View All Chiefs & History</a>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Tourism Sites -->
+<section class="tourism-preview section bg-light">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2>Experience Our Heritage</h2>
+            <p>Visit our historical sites and natural wonders</p>
+        </div>
+        
+        <div class="tourism-grid">
+            {% for site in tourism_sites %}
+            <div class="tourism-card">
+                <div class="tourism-image">
+                    {% if site.image %}
+                    <img src="{{ site.image.url }}" alt="{{ site.name }}">
+                    {% else %}
+                    <div class="tourism-placeholder">
+                        <i class="fas fa-landmark"></i>
+                    </div>
+                    {% endif %}
+                    <span class="tourism-badge">{{ site.get_site_type_display }}</span>
+                </div>
+                <div class="tourism-content">
+                    <h3>{{ site.name }}</h3>
+                    <p class="location"><i class="fas fa-map-marker-alt"></i> {{ site.location }}</p>
+                    <p class="description">{{ site.description|truncatewords:20 }}</p>
+                    <div class="tourism-footer">
+                        <div class="price">
+                            <span class="label">From</span>
+                            <span class="amount">TZS {{ site.entry_fee_local|floatformat:0 }}</span>
+                        </div>
+                        <a href="{% url 'tourism_detail' site.slug %}" class="btn btn-sm">Book Now</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products -->
+<section class="products-preview section">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2>Arts & Crafts Collection</h2>
+            <p>Authentic handcrafted items available as NFTs and physical products</p>
+        </div>
+        
+        <div class="products-grid">
+            {% for product in featured_products %}
+            <div class="product-card">
+                <div class="product-image">
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                    {% else %}
+                    <img src="{% static 'products/product_cabbage.jpeg' %}" alt="{{ product.name }}">
+                    {% endif %}
+                    <div class="product-badges">
+                        {% if product.product_type == 'nft' %}
+                        <span class="badge badge-nft">NFT</span>
+                        {% elif product.product_type == 'both' %}
+                        <span class="badge badge-both">NFT + Physical</span>
+                        {% endif %}
+                        
+                        {% if product.status == 'bidding' %}
+                        <span class="badge badge-bidding">Bidding</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="product-content">
+                    <h3>{{ product.name }}</h3>
+                    <p class="artist">by {{ product.artist_name }}</p>
+                    <div class="product-footer">
+                        {% if product.status == 'bidding' %}
+                        <div class="price">
+                            <span class="label">Current Bid</span>
+                            <span class="amount">${{ product.current_bid|floatformat:2 }}</span>
+                        </div>
+                        {% else %}
+                        <div class="price">
+                            <span class="amount">${{ product.price|floatformat:2 }}</span>
+                        </div>
+                        {% endif %}
+                        <a href="{% url 'product_detail' product.slug %}" class="btn btn-sm">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center" style="margin-top: 3rem;">
+            <a href="{% url 'products' %}" class="btn btn-primary">Browse All Products</a>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Projects -->
+<section class="projects-preview section bg-light">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2>Community Projects</h2>
+            <p>Supporting sustainable development in our region</p>
+        </div>
+        
+        <div class="projects-grid">
+            {% for project in featured_projects %}
+            <div class="project-card">
+                <div class="project-image">
+                    {% if project.image %}
+                    <img src="{{ project.image.url }}" alt="{{ project.title }}">
+                    {% else %}
+                    <img src="{% static 'projects/project_beans.jpeg' %}" alt="{{ project.title }}">
+                    {% endif %}
+                    <span class="project-status status-{{ project.status }}">{{ project.get_status_display }}</span>
+                </div>
+                <div class="project-content">
+                    <div class="project-category">
+                        {% if project.category %}
+                        <i class="fas fa-tag"></i> {{ project.category.name }}
+                        {% endif %}
+                    </div>
+                    <h3>{{ project.title }}</h3>
+                    <p>{{ project.description|truncatewords:25 }}</p>
+                    
+                    <div class="project-stats">
+                        <div class="stat">
+                            <i class="fas fa-users"></i>
+                            <span>{{ project.beneficiaries }} Beneficiaries</span>
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-calendar"></i>
+                            <span>{{ project.start_date|date:"M Y" }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {{ project.progress_percentage }}%"></div>
+                        <span class="progress-text">{{ project.progress_percentage }}% Complete</span>
+                    </div>
+                    
+                    <a href="{% url 'project_detail' project.slug %}" class="btn btn-outline">Learn More</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center" style="margin-top: 3rem;">
+            <a href="{% url 'projects' %}" class="btn btn-primary">View All Projects</a>
+        </div>
+    </div>
+</section>
+
+<!-- Image Gallery Showcase -->
+<section class="gallery-showcase section">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2>Our Heritage Gallery</h2>
+            <p>Explore the rich visual history of Chief Mkwawa and our community</p>
+        </div>
+        
+        <div class="gallery-grid">
+            <div class="gallery-item">
+                <img src="{% static 'historical/chief_mkwawa_mtwavinyinyka.jpeg' %}" alt="Chief Mkwawa">
+                <div class="gallery-overlay">
+                    <h4>Chief Mkwawa Mtwavinyinyka</h4>
+                    <p>The legendary leader</p>
+                </div>
+            </div>
+            <div class="gallery-item">
+                <img src="{% static 'historical/mkwawa_head_after_return_from_germany.jpeg' %}" alt="Mkwawa Head Return">
+                <div class="gallery-overlay">
+                    <h4>Historic Return</h4>
+                    <p>Head of Chief Mkwawa returned from Germany</p>
+                </div>
+            </div>
+            <div class="gallery-item">
+                <img src="{% static 'historical/historical_mkwawa_grave.jpeg' %}" alt="Mkwawa Grave">
+                <div class="gallery-overlay">
+                    <h4>Resting Place</h4>
+                    <p>Chief Mkwawa's memorial site</p>
+                </div>
+            </div>
+            <div class="gallery-item">
+                <img src="{% static 'historical/historical_food_preservation_tools.jpeg' %}" alt="Traditional Tools">
+                <div class="gallery-overlay">
+                    <h4>Traditional Heritage</h4>
+                    <p>Food preservation tools</p>
+                </div>
+            </div>
+            <div class="gallery-item">
+                <img src="{% static 'projects/project_irrigation.jpeg' %}" alt="Irrigation Project">
+                <div class="gallery-overlay">
+                    <h4>Irrigation Project</h4>
+                    <p>Modern farming techniques</p>
+                </div>
+            </div>
+            <div class="gallery-item">
+                <img src="{% static 'products/product_cabbage.jpeg' %}" alt="Fresh Produce">
+                <div class="gallery-overlay">
+                    <h4>Agricultural Products</h4>
+                    <p>Fresh from our farms</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Historical Events Timeline -->
+<section class="events-timeline section bg-light">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2>Historical Milestones</h2>
+            <p>Key events in our heritage</p>
+        </div>
+        
+        <div class="timeline">
+            {% for event in recent_events %}
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">{{ event.date|date:"F d, Y" }}</div>
+                    <h3>{{ event.title }}</h3>
+                    <p>{{ event.description|truncatewords:30 }}</p>
+                </div>
+            </div>
+            {% empty %}
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">1891</div>
+                    <h3>Chief Mkwawa's Leadership</h3>
+                    <p>Chief Mkwawa established his legendary rule over the Hehe people, demonstrating exceptional military and diplomatic skills.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">1954</div>
+                    <h3>Head Return from Germany</h3>
+                    <p>After decades, the head of Chief Mkwawa was returned to Tanzania from Germany, marking a historic moment of reconciliation.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">Present</div>
+                    <h3>Heritage Preservation</h3>
+                    <p>Today, we continue to honor and preserve the legacy of Chief Mkwawa through our museum, cultural programs, and community projects.</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center" style="margin-top: 3rem;">
+            <a href="{% url 'heritage' %}" class="btn btn-secondary">Explore Full History</a>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content">
+            <h2>Be Part of Our Heritage</h2>
+            <p>Visit our museum, support our artisans, and contribute to community development</p>
+            <div class="cta-buttons">
+                <a href="{% url 'tourism' %}" class="btn btn-light">Plan Your Visit</a>
+                <a href="{% url 'contact' %}" class="btn btn-outline-light">Get In Touch</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.hero-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.hero-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+}
+
+.hero-slide.active {
+    opacity: 1;
+}
+
+.slider-controls {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    z-index: 10;
+}
+
+.slider-btn {
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255,255,255,0.3);
+    color: var(--white);
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.slider-btn:hover {
+    background: rgba(255,255,255,0.3);
+    transform: scale(1.1);
+}
+
+.slider-dots {
+    display: flex;
+    gap: 0.8rem;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.4);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.dot.active {
+    background: var(--accent-color);
+    width: 30px;
+    border-radius: 10px;
+}
+
+.gallery-showcase {
+    background: var(--white);
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3rem;
+}
+
+.gallery-item {
+    position: relative;
+    height: 350px;
+    border-radius: 15px;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.gallery-item:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.gallery-item:hover img {
+    transform: scale(1.1);
+}
+
+.gallery-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 2rem;
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 70%, transparent 100%);
+    color: var(--white);
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+}
+
+.gallery-item:hover .gallery-overlay {
+    transform: translateY(0);
+}
+
+.gallery-overlay h4 {
+    color: var(--white);
+    margin-bottom: 0.5rem;
+    font-size: 1.3rem;
+}
+
+.gallery-overlay p {
+    color: rgba(255,255,255,0.9);
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+    .slider-controls {
+        bottom: 70px;
+    }
+    
+    .slider-btn {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .gallery-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .gallery-item {
+        height: 300px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const slides = document.querySelectorAll('.hero-slide');
+    const dots = document.querySelectorAll('.dot');
+    const prevBtn = document.querySelector('.slider-btn.prev');
+    const nextBtn = document.querySelector('.slider-btn.next');
+    let currentSlide = 0;
+    let slideInterval;
+
+    function showSlide(index) {
+        slides.forEach(slide => slide.classList.remove('active'));
+        dots.forEach(dot => dot.classList.remove('active'));
+        
+        slides[index].classList.add('active');
+        dots[index].classList.add('active');
+        currentSlide = index;
+    }
+
+    function nextSlide() {
+        currentSlide = (currentSlide + 1) % slides.length;
+        showSlide(currentSlide);
+    }
+
+    function prevSlide() {
+        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+        showSlide(currentSlide);
+    }
+
+    function startSlideshow() {
+        slideInterval = setInterval(nextSlide, 5000);
+    }
+
+    function stopSlideshow() {
+        clearInterval(slideInterval);
+    }
+
+    // Event listeners
+    nextBtn.addEventListener('click', () => {
+        stopSlideshow();
+        nextSlide();
+        startSlideshow();
+    });
+
+    prevBtn.addEventListener('click', () => {
+        stopSlideshow();
+        prevSlide();
+        startSlideshow();
+    });
+
+    dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+            stopSlideshow();
+            showSlide(index);
+            startSlideshow();
+        });
+    });
+
+    // Pause on hover
+    const heroSection = document.getElementById('heroSection');
+    heroSection.addEventListener('mouseenter', stopSlideshow);
+    heroSection.addEventListener('mouseleave', startSlideshow);
+
+    // Start slideshow
+    startSlideshow();
+});
+</script>
+{% endblock %}

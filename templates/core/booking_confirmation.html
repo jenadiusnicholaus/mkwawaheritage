@@ -1,0 +1,248 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Booking Confirmation - MkwawaHeritage{% endblock %}
+
+{% block content %}
+<!-- Confirmation Header -->
+<section class="page-header">
+    <div class="container">
+        <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h1>Booking Confirmed!</h1>
+        <p>Your visit has been successfully booked</p>
+    </div>
+</section>
+
+<!-- Booking Details -->
+<section class="section">
+    <div class="container">
+        <div class="confirmation-card">
+            <div class="confirmation-header">
+                <h2>Booking Reference</h2>
+                <h3 class="reference-number">{{ booking.booking_reference }}</h3>
+                <p>Please save this reference number for your records</p>
+            </div>
+            
+            <div class="booking-details-grid">
+                <div class="detail-section">
+                    <h4><i class="fas fa-landmark"></i> Site Details</h4>
+                    <p><strong>{{ booking.tourism_site.name }}</strong></p>
+                    <p>{{ booking.tourism_site.location }}, {{ booking.tourism_site.region }}</p>
+                    <p class="hours">Opening Hours: {{ booking.tourism_site.opening_hours }}</p>
+                </div>
+                
+                <div class="detail-section">
+                    <h4><i class="fas fa-calendar-check"></i> Visit Information</h4>
+                    <p><strong>Date:</strong> {{ booking.visit_date|date:"F d, Y" }}</p>
+                    <p><strong>Time:</strong> {{ booking.visit_time|time:"g:i A" }}</p>
+                    <p><strong>Number of Visitors:</strong> {{ booking.number_of_visitors }}</p>
+                    <p><strong>Visitor Type:</strong> {{ booking.get_visitor_type_display }}</p>
+                </div>
+                
+                <div class="detail-section">
+                    <h4><i class="fas fa-user"></i> Contact Information</h4>
+                    <p><strong>Name:</strong> {{ booking.visitor_name }}</p>
+                    <p><strong>Email:</strong> {{ booking.visitor_email }}</p>
+                    <p><strong>Phone:</strong> {{ booking.visitor_phone }}</p>
+                </div>
+                
+                <div class="detail-section">
+                    <h4><i class="fas fa-dollar-sign"></i> Payment Summary</h4>
+                    <p><strong>Total Amount:</strong></p>
+                    <p class="total-amount">TZS {{ booking.total_amount|floatformat:0 }}</p>
+                    <p class="status-badge status-{{ booking.status }}">{{ booking.get_status_display }}</p>
+                </div>
+            </div>
+            
+            {% if booking.special_requirements %}
+            <div class="special-requirements">
+                <h4><i class="fas fa-info-circle"></i> Special Requirements</h4>
+                <p>{{ booking.special_requirements }}</p>
+            </div>
+            {% endif %}
+            
+            <div class="confirmation-actions">
+                <button onclick="window.print()" class="btn btn-outline">
+                    <i class="fas fa-print"></i> Print Confirmation
+                </button>
+                <a href="{% url 'tourism' %}" class="btn btn-primary">
+                    <i class="fas fa-arrow-left"></i> Back to Tourism Sites
+                </a>
+                <a href="{% url 'home' %}" class="btn btn-secondary">
+                    <i class="fas fa-home"></i> Return Home
+                </a>
+            </div>
+        </div>
+        
+        <!-- Important Information -->
+        <div class="info-box-section">
+            <div class="info-box">
+                <i class="fas fa-exclamation-circle"></i>
+                <h4>Important Information</h4>
+                <ul>
+                    <li>Please arrive 15 minutes before your scheduled time</li>
+                    <li>Bring a valid ID for verification</li>
+                    <li>Your booking reference number will be required at entry</li>
+                    <li>A confirmation email has been sent to {{ booking.visitor_email }}</li>
+                </ul>
+            </div>
+            
+            <div class="info-box">
+                <i class="fas fa-phone"></i>
+                <h4>Need Assistance?</h4>
+                <p>If you need to modify or cancel your booking, please contact us:</p>
+                <p><strong>Phone:</strong> +255 123 456 789</p>
+                <p><strong>Email:</strong> bookings@mkwawaheritage.com</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.success-icon {
+    font-size: 5rem;
+    color: var(--accent-color);
+    margin-bottom: 1rem;
+}
+
+.confirmation-card {
+    background: var(--white);
+    border-radius: 15px;
+    padding: 3rem;
+    box-shadow: var(--shadow-lg);
+    max-width: 900px;
+    margin: 0 auto 3rem;
+}
+
+.confirmation-header {
+    text-align: center;
+    padding-bottom: 2rem;
+    border-bottom: 2px solid var(--light-color);
+    margin-bottom: 2rem;
+}
+
+.reference-number {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    font-family: monospace;
+    letter-spacing: 2px;
+    margin: 1rem 0;
+}
+
+.booking-details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.detail-section {
+    padding: 1.5rem;
+    background: var(--light-color);
+    border-radius: 10px;
+}
+
+.detail-section h4 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.detail-section p {
+    margin-bottom: 0.5rem;
+}
+
+.total-amount {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin: 0.5rem 0;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.status-pending {
+    background: var(--warning);
+    color: var(--dark-color);
+}
+
+.status-confirmed {
+    background: var(--success);
+    color: var(--white);
+}
+
+.special-requirements {
+    padding: 1.5rem;
+    background: #fff3cd;
+    border-radius: 10px;
+    margin: 2rem 0;
+}
+
+.special-requirements h4 {
+    color: var(--warning);
+    margin-bottom: 1rem;
+}
+
+.confirmation-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid var(--light-color);
+}
+
+.info-box-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.info-box {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: var(--shadow-md);
+}
+
+.info-box i {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.info-box h4 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.info-box ul {
+    padding-left: 1.5rem;
+}
+
+.info-box ul li {
+    margin-bottom: 0.5rem;
+}
+
+@media print {
+    .header, .footer, .confirmation-actions {
+        display: none;
+    }
+}
+</style>
+{% endblock %}

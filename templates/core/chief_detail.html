@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ chief.name }} - MkwawaHeritage{% endblock %}
+
+{% block content %}
+<!-- Hero Section with Background -->
+<section class="chief-hero-section">
+    <div class="chief-hero-overlay"></div>
+    <div class="container">
+        <div class="chief-hero-content">
+            <div class="chief-badge-position">
+                <span class="position-badge">{{ chief.get_position_display }}</span>
+            </div>
+            <h1 class="chief-hero-title">{{ chief.name }}</h1>
+            <div class="chief-hero-stats">
+                {% if chief.birth_year %}
+                <div class="hero-stat-box">
+                    <i class="fas fa-birthday-cake"></i>
+                    <div>
+                        <span class="stat-label">Born</span>
+                        <span class="stat-value">{{ chief.birth_year }}</span>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="hero-stat-box">
+                    <i class="fas fa-crown"></i>
+                    <div>
+                        <span class="stat-label">Reign</span>
+                        <span class="stat-value">{{ chief.reign_start }} - {% if chief.reign_end %}{{ chief.reign_end }}{% else %}Present{% endif %}</span>
+                    </div>
+                </div>
+                {% if chief.death_year %}
+                <div class="hero-stat-box">
+                    <i class="fas fa-hourglass-end"></i>
+                    <div>
+                        <span class="stat-label">Died</span>
+                        <span class="stat-value">{{ chief.death_year }}</span>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Chief Portrait & Quick Facts -->
+<section class="chief-intro-section">
+    <div class="container">
+        <div class="chief-intro-grid">
+            <div class="chief-portrait-card">
+                {% if chief.image %}
+                <img src="{{ chief.image.url }}" alt="{{ chief.name }}" class="chief-portrait-img">
+                {% else %}
+                <div class="chief-portrait-placeholder">
+                    <i class="fas fa-user-crown"></i>
+                </div>
+                {% endif %}
+                <div class="portrait-frame"></div>
+            </div>
+            
+            <div class="chief-quick-facts">
+                <h2 class="section-title-modern">
+                    <span class="title-icon"><i class="fas fa-scroll"></i></span>
+                    Quick Facts
+                </h2>
+                <div class="facts-grid">
+                    <div class="fact-item">
+                        <div class="fact-icon">
+                            <i class="fas fa-chess-king"></i>
+                        </div>
+                        <div class="fact-content">
+                            <h4>Position</h4>
+                            <p>{{ chief.get_position_display }} of the Hehe Kingdom</p>
+                        </div>
+                    </div>
+                    <div class="fact-item">
+                        <div class="fact-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="fact-content">
+                            <h4>Reign Duration</h4>
+                            <p>{% if chief.reign_end %}{{ chief.reign_end|add:"-"|add:chief.reign_start }} years{% else %}Ongoing{% endif %}</p>
+                        </div>
+                    </div>
+                    {% if chief.birth_year and chief.death_year %}
+                    <div class="fact-item">
+                        <div class="fact-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="fact-content">
+                            <h4>Lifespan</h4>
+                            <p>{{ chief.death_year|add:"-"|add:chief.birth_year }} years</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="fact-item">
+                        <div class="fact-icon">
+                            <i class="fas fa-landmark"></i>
+                        </div>
+                        <div class="fact-content">
+                            <h4>Era</h4>
+                            <p>{{ chief.reign_start }}s Period</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Biography Section -->
+<section class="chief-biography-section">
+    <div class="container">
+        <div class="biography-card">
+            <div class="section-header-elegant">
+                <span class="header-decoration"></span>
+                <h2>
+                    <i class="fas fa-book-open"></i>
+                    Biography
+                </h2>
+                <span class="header-decoration"></span>
+            </div>
+            <div class="biography-content">
+                {{ chief.biography|linebreaks }}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Achievements Section -->
+<section class="chief-achievements-section">
+    <div class="container">
+        <div class="achievements-header">
+            <h2>
+                <i class="fas fa-trophy"></i>
+                Achievements & Legacy
+            </h2>
+            <p class="achievements-subtitle">Notable accomplishments that shaped the Hehe Kingdom</p>
+        </div>
+        
+        <div class="achievements-card">
+            <div class="achievements-icon-bg">
+                <i class="fas fa-medal"></i>
+            </div>
+            <div class="achievements-content">
+                {{ chief.achievements|linebreaks }}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Historical Events Timeline -->
+{% if events %}
+<section class="chief-events-section">
+    <div class="container">
+        <div class="events-header-luxury">
+            <span class="header-ornament">◆</span>
+            <h2>
+                <i class="fas fa-scroll"></i>
+                Historical Events During This Reign
+            </h2>
+            <span class="header-ornament">◆</span>
+        </div>
+        <p class="events-subtitle">Key moments that shaped history under {{ chief.name }}'s leadership</p>
+        
+        <div class="events-timeline-modern">
+            {% for event in events %}
+            <div class="timeline-event-item {% cycle 'timeline-left' 'timeline-right' %}" data-aos="fade-up">
+                <div class="timeline-connector">
+                    <div class="connector-dot">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    {% if not forloop.last %}
+                    <div class="connector-line"></div>
+                    {% endif %}
+                </div>
+                
+                <div class="event-card-modern">
+                    <div class="event-date-ribbon">
+                        <div class="ribbon-content">
+                            <span class="ribbon-day">{{ event.date|date:"d" }}</span>
+                            <span class="ribbon-divider">/</span>
+                            <span class="ribbon-month">{{ event.date|date:"m" }}</span>
+                            <span class="ribbon-divider">/</span>
+                            <span class="ribbon-year">{{ event.date|date:"Y" }}</span>
+                        </div>
+                    </div>
+                    
+                    {% if event.image %}
+                    <div class="event-image-modern">
+                        <img src="{{ event.image.url }}" alt="{{ event.title }}">
+                        <div class="image-gradient-overlay"></div>
+                        <div class="image-icon-overlay">
+                            <i class="fas fa-history"></i>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="event-content-modern">
+                        <div class="event-category-tag">
+                            <i class="fas fa-bookmark"></i>
+                            Historic Moment
+                        </div>
+                        <h3 class="event-title-modern">{{ event.title }}</h3>
+                        <div class="event-divider"></div>
+                        <p class="event-description-modern">{{ event.description }}</p>
+                        <div class="event-footer-modern">
+                            <span class="event-reign-badge">
+                                <i class="fas fa-crown"></i>
+                                {{ chief.get_position_display }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Back Navigation -->
+<section class="navigation-section">
+    <div class="container text-center">
+        <a href="{% url 'heritage' %}" class="btn-back-elegant">
+            <i class="fas fa-arrow-left"></i>
+            Back to Heritage
+        </a>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,131 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MkwawaHeritage - Preserving Our Legacy{% endblock %}</title>
+    <meta name="description" content="Explore the rich heritage of Chief Mkwawa, book tourism experiences, discover traditional arts and crafts, and learn about our community projects.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=3.9">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="container">
+                <div class="nav-wrapper">
+                    <div class="logo">
+                        <a href="{% url 'home' %}">
+                            <h1>MkwawaHeritage</h1>
+                            <p class="tagline">Preserving Our Legacy</p>
+                        </a>
+                    </div>
+                    
+                    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    
+                    <ul class="nav-menu" id="navMenu">
+                        <li><a href="{% url 'home' %}" class="{% if request.path == '/' %}active{% endif %}">Home</a></li>
+                        <li><a href="{% url 'heritage' %}" class="{% if 'heritage' in request.path %}active{% endif %}">Heritage</a></li>
+                        <li><a href="{% url 'tourism' %}" class="{% if 'tourism' in request.path %}active{% endif %}">Tourism</a></li>
+                        <li><a href="{% url 'products' %}" class="{% if 'products' in request.path %}active{% endif %}">Arts & Crafts</a></li>
+                        <li><a href="{% url 'projects' %}" class="{% if 'projects' in request.path %}active{% endif %}">Projects</a></li>
+                        <li><a href="{% url 'contact' %}" class="{% if 'contact' in request.path %}active{% endif %}">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="messages-container">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            <div class="container">
+                <span>{{ message }}</span>
+                <button class="close-alert">&times;</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-top">
+            <div class="container">
+                <div class="footer-grid">
+                    <div class="footer-col">
+                        <h3>MkwawaHeritage</h3>
+                        <p>Preserving the rich cultural heritage of Chief Mkwawa and the Southern Highlands. Experience our history, support our community, and be part of our legacy.</p>
+                        <div class="social-links">
+                            <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                            <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                            <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                        </div>
+                    </div>
+                    
+                    <div class="footer-col">
+                        <h4>Quick Links</h4>
+                        <ul>
+                            <li><a href="{% url 'heritage' %}">Our Heritage</a></li>
+                            <li><a href="{% url 'tourism' %}">Visit Us</a></li>
+                            <li><a href="{% url 'products' %}">Shop</a></li>
+                            <li><a href="{% url 'projects' %}">Community Projects</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-col">
+                        <h4>Contact Info</h4>
+                        <ul class="contact-info">
+                            <li><i class="fas fa-map-marker-alt"></i> Southern Highlands, Tanzania</li>
+                            <li><i class="fas fa-phone"></i> +255 123 456 789</li>
+                            <li><i class="fas fa-envelope"></i> info@mkwawaheritage.com</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-col">
+                        <h4>Newsletter</h4>
+                        <p>Subscribe to receive updates about our heritage and community projects.</p>
+                        <form method="post" action="{% url 'newsletter_subscribe' %}" class="newsletter-form">
+                            {% csrf_token %}
+                            <input type="email" name="email" placeholder="Your email" required>
+                            <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <div class="container">
+                <p>&copy; 2025 MkwawaHeritage.com. All rights reserved. | Designed with pride for our heritage</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

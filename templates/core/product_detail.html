@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} - MkwawaHeritage{% endblock %}
+
+{% block content %}
+<!-- Product Detail -->
+<section class="section">
+    <div class="container">
+        <div class="product-detail-grid">
+            <div class="product-gallery">
+                <div class="main-image">
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-main-image">
+                    {% else %}
+                    <img src="{% static 'products/product_cabbage.jpeg' %}" alt="{{ product.name }}" class="product-main-image">
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="product-info-detail">
+                <div class="product-breadcrumb">
+                    <a href="{% url 'products' %}">Products</a> / 
+                    <a href="?category={{ product.category.slug }}">{{ product.category.name }}</a> / 
+                    <span>{{ product.name }}</span>
+                </div>
+                
+                <h1>{{ product.name }}</h1>
+                <p class="artist-info"><i class="fas fa-user-circle"></i> Created by <strong>{{ product.artist_name }}</strong></p>
+                
+                <div class="product-badges-detail">
+                    {% if product.product_type == 'nft' %}
+                    <span class="badge badge-nft"><i class="fab fa-ethereum"></i> NFT</span>
+                    {% elif product.product_type == 'both' %}
+                    <span class="badge badge-both"><i class="fas fa-box"></i> NFT + Physical</span>
+                    {% else %}
+                    <span class="badge badge-physical"><i class="fas fa-box"></i> Physical Product</span>
+                    {% endif %}
+                    
+                    <span class="badge badge-status">{{ product.get_status_display }}</span>
+                </div>
+                
+                <div class="product-description">
+                    <h3>Description</h3>
+                    {{ product.description|linebreaks }}
+                </div>
+                
+                <div class="product-specifications">
+                    <h3>Specifications</h3>
+                    <table>
+                        {% if product.dimensions %}
+                        <tr>
+                            <td><strong>Dimensions:</strong></td>
+                            <td>{{ product.dimensions }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if product.materials %}
+                        <tr>
+                            <td><strong>Materials:</strong></td>
+                            <td>{{ product.materials }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if product.year_created %}
+                        <tr>
+                            <td><strong>Year Created:</strong></td>
+                            <td>{{ product.year_created }}</td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <td><strong>Category:</strong></td>
+                            <td>{{ product.category.name }}</td>
+                        </tr>
+                        {% if product.stock_quantity %}
+                        <tr>
+                            <td><strong>Available:</strong></td>
+                            <td>{{ product.stock_quantity }} in stock</td>
+                        </tr>
+                        {% endif %}
+                    </table>
+                </div>
+                
+                <div class="product-pricing-detail">
+                    {% if product.status == 'bidding' %}
+                    <div class="bidding-section">
+                        <h3>Current Bidding</h3>
+                        <div class="current-bid">
+                            <span class="bid-label">Current Bid</span>
+                            <span class="bid-amount">${{ product.current_bid|floatformat:2 }}</span>
+                        </div>
+                        <p class="bid-count">{{ recent_bids|length }} bid(s) placed</p>
+                        
+                        <form method="post" class="bid-form">
+                            {% csrf_token %}
+                            <h4>Place Your Bid</h4>
+                            
+                            <div class="form-group">
+                                <label>Your Name *</label>
+                                <input type="text" name="bidder_name" required class="form-control">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Email *</label>
+                                <input type="email" name="bidder_email" required class="form-control">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Phone *</label>
+                                <input type="tel" name="bidder_phone" required class="form-control">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Bid Amount ($) *</label>
+                                <input type="number" name="bid_amount" step="0.01" min="{{ product.current_bid|default:product.starting_bid|default:product.price }}" required class="form-control">
+                                <small>Minimum bid: ${{ product.current_bid|default:product.starting_bid|default:product.price|floatformat:2 }}</small>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary btn-block">Place Bid</button>
+                        </form>
+                        
+                        {% if recent_bids %}
+                        <div class="recent-bids">
+                            <h4>Recent Bids</h4>
+                            <ul>
+                                {% for bid in recent_bids %}
+                                <li>
+                                    <span class="bidder">{{ bid.bidder_name }}</span>
+                                    <span class="amount">${{ bid.bid_amount|floatformat:2 }}</span>
+                                    {% if bid.is_winning %}<span class="winning-badge">Winning</span>{% endif %}
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% else %}
+                    <div class="purchase-section">
+                        <div class="price-display">
+                            <span class="price-label">Price</span>
+                            <span class="price-amount">${{ product.price|floatformat:2 }}</span>
+                        </div>
+                        <button class="btn btn-primary btn-block btn-lg">
+                            <i class="fas fa-shopping-cart"></i> Purchase Now
+                        </button>
+                        <p class="purchase-note">Contact us to complete your purchase</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
