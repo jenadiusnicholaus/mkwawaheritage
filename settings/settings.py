@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-#^(+bj89ku+m59of(4hbet4*25eys*$7vme31gsqqelbar_k5w
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["162.0.233.47", "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -48,6 +48,16 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+# HTTPS Configuration
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.162.0.233.47',
+    'https://162.0.233.47',
+    'http://*.162.0.233.47',
+    'http://162.0.233.47',
+    "https://mkwawaheritage.com/"
 ]
 
 ROOT_URLCONF = 'settings.urls'
